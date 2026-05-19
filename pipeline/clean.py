@@ -4,7 +4,19 @@ import pandas as pd
 RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "raw")
 PROCESSED_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "processed")
 
-YEARS = [2019, 2020, 2021, 2022, 2023]
+def get_available_years() -> list:
+    """Automatically detect which years have data in data/raw/."""
+    import glob
+    files = glob.glob(os.path.join(RAW_DIR, "h1b_*.csv"))
+    years = []
+    for f in files:
+        basename = os.path.basename(f)
+        try:
+            year = int(basename.replace("h1b_", "").replace(".csv", ""))
+            years.append(year)
+        except ValueError:
+            pass
+    return sorted(years)
 
 
 def load_raw(year: int) -> pd.DataFrame:
@@ -150,7 +162,9 @@ def run():
 
     print("=== Loading raw data ===")
     frames = []
-    for year in YEARS:
+    years = get_available_years()
+    print(f"  Found data for years: {years}")
+    for year in years:
         try:
             df = load_raw(year)
             df = normalize(df)
