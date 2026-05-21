@@ -18,7 +18,7 @@ app.add_middleware(
 )
 
 PROCESSED_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "processed")
-SCORES_PATH = os.path.join(PROCESSED_DIR, "company_scores.csv")
+SCORES_PATH = os.path.join(PROCESSED_DIR, "company_scores_enriched.csv")
 COMBINED_PATH = os.path.join(PROCESSED_DIR, "h1b_combined.csv")
 
 # Load data once at startup
@@ -46,6 +46,9 @@ def company_to_dict(row: pd.Series) -> dict:
         "state": str(row["state"]),
         "city": str(row["city"]).title(),
         "risk_level": get_risk_level(float(row["sponsor_score"])),
+        "median_salary": int(row["median_salary_all"]) if pd.notna(row.get("median_salary_all")) else None,
+        "top_roles": str(row["top_roles"]).split(", ")[:5] if pd.notna(row.get("top_roles")) else [],
+        "total_lca_filings": int(row["total_lca_filings"]) if pd.notna(row.get("total_lca_filings")) else None,
     }
 
 
@@ -65,16 +68,21 @@ def get_yearly_history(employer: str) -> list:
     if emp_data.empty:
         return []
 
+    # Aggregate all columns by year to remove duplicates
+    numeric_cols = ["initial_approvals", "initial_denials", 
+                    "continuing_approvals", "continuing_denials",
+                    "initial_approval", "initial_denial",
+                    "continuing_approval", "continuing_denial"]
+    
+    existing_cols = [c for c in numeric_cols if c in emp_data.columns]
+    
+    agg_dict = {c: "sum" for c in existing_cols}
+    yearly = emp_data.groupby("fiscal_year").agg(agg_dict).reset_index()
+
     history = []
-    for _, row in emp_data.sort_values("fiscal_year").iterrows():
-        approvals = int(
-            row.get("initial_approvals", row.get("initial_approval", 0)) +
-            row.get("continuing_approvals", row.get("continuing_approval", 0))
-        )
-        denials = int(
-            row.get("initial_denials", row.get("initial_denial", 0)) +
-            row.get("continuing_denials", row.get("continuing_denial", 0))
-        )
+    for _, row in yearly.sort_values("fiscal_year").iterrows():
+        approvals = int(sum(row.get(c, 0) for c in ["initial_approvals", "initial_approval", "continuing_approvals", "continuing_approval"] if c in row))
+        denials = int(sum(row.get(c, 0) for c in ["initial_denials", "initial_denial", "continuing_denials", "continuing_denial"] if c in row))
         total = approvals + denials
         history.append({
             "year": int(row["fiscal_year"]),
@@ -84,7 +92,6 @@ def get_yearly_history(employer: str) -> list:
             "approval_rate": round(approvals / total * 100, 1) if total > 0 else 0,
         })
     return history
-
 
 @app.get("/")
 def root():
