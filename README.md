@@ -4,7 +4,7 @@
 
 Visawise processes 268,801 public USCIS petitions across 29,440 companies and surfaces sponsorship risk intelligence that doesn't exist anywhere else in a clean, usable interface.
 
-🔗 **[Live demo](https://visawise.vercel.app)** · **[API docs](https://visawise-api.railway.app/docs)**
+🔗 **[Live demo](https://visawise.vercel.app)** · **[API docs](https://visawise-production.up.railway.app/docs)**
 
 ---
 
