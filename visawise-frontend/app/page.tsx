@@ -1,5 +1,5 @@
 "use client";
-
+console.log("VISAWISE LOADED");
 import { useState, useEffect, useCallback } from "react";
 import { Search, Shield, TrendingUp, AlertTriangle, CheckCircle, XCircle, Building2, MapPin, Calendar, FileText } from "lucide-react";
 
@@ -182,7 +182,7 @@ function CompanyDrawer({ company, onClose }: { company: Company; onClose: () => 
             <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 12, color: "#1a1a1a" }}>Filing history</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {company.yearly_history.map((y) => (
-                <div key={y.year} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div key={`${y.year}-${y.total}`} style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <span style={{ fontSize: 12, color: "#888", minWidth: 36 }}>{y.year}</span>
                   <div style={{ flex: 1, height: 6, background: "#f0f0f0", borderRadius: 99, overflow: "hidden" }}>
                     <div style={{ height: "100%", width: `${y.approval_rate}%`, background: "#1D9E75", borderRadius: 99, transition: "width 0.4s ease" }} />
