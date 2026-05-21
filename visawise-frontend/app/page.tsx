@@ -20,6 +20,9 @@ interface Company {
   city: string;
   risk_level: RiskLevel;
   yearly_history?: YearlyData[];
+  median_salary?: number;
+  top_roles?: string[];
+  total_lca_filings?: number;
 }
 
 interface YearlyData {
@@ -169,6 +172,30 @@ function CompanyDrawer({ company, onClose }: { company: Company; onClose: () => 
             </div>
           ))}
         </div>
+
+        {company.median_salary && (
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 10, color: "#1a1a1a" }}>
+              Roles & salary
+            </div>
+            <div style={{ background: "#f8f8f8", borderRadius: 8, padding: "0.875rem 1rem", marginBottom: 10 }}>
+              <div style={{ fontSize: 11, color: "#888", marginBottom: 2 }}>Median salary</div>
+              <div style={{ fontSize: 22, fontWeight: 500, color: "#1D9E75" }}>
+                ${company.median_salary.toLocaleString()}
+              </div>
+              <div style={{ fontSize: 11, color: "#aaa", marginTop: 2 }}>based on {company.total_lca_filings} LCA filings</div>
+            </div>
+            {company.top_roles && company.top_roles.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {company.top_roles.map((role) => (
+                  <span key={role} style={{ fontSize: 12, padding: "4px 10px", borderRadius: 99, background: "#f0f0f0", color: "#444" }}>
+                    {role}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         <div style={{ display: "flex", gap: 6, marginBottom: 24, fontSize: 12, color: "#666" }}>
           <Building2 size={13} />
