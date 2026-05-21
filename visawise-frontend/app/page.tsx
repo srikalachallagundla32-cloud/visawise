@@ -3,7 +3,7 @@ console.log("VISAWISE LOADED");
 import { useState, useEffect, useCallback } from "react";
 import { Search, Shield, TrendingUp, AlertTriangle, CheckCircle, XCircle, Building2, MapPin, Calendar, FileText } from "lucide-react";
 
-const API = "http://127.0.0.1:8000";
+const API = "https://your-railway-url.up.railway.app";
 
 type RiskLevel = "very_safe" | "safe" | "moderate" | "risky";
 
